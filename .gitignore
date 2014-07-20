@@ -11,3 +11,11 @@ packages/
 
 # Include when developing application packages.
 pubspec.lock
+
+*.dll
+*.dylib
+*.exp
+*.lib
+*.o
+*.obj
+*.so

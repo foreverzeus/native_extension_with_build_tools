@@ -1,9 +1,3 @@
-#Native_extension_with_build_tools
-==========
-
-Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
-
-```dart
 import "dart:io";
 import "package:ccompilers/ccompilers.dart";
 import "package:build_tools/build_shell.dart";
@@ -158,4 +152,3 @@ void main(List<String> args) {
 
   new BuildShell().run(args).then((exitCode) => exit(exitCode));
 }
-```
