@@ -70,24 +70,29 @@ void main(List<String> args) {
 
   // Makefile
   // Target: default
-  target("default", ["build"], (Target t, Map args) {
-  });
+  target("default", ["build"], null, description: "Build and clean.");
 
   // Target: build
-  target("build", [libname], (Target t, Map args) {
+  target("build", ["clean_all", "compile_link", "clean"], (Target t, Map args) {
     print("The ${t.name} successful.");
   }, description: "Build '$PROJECT_NAME'.");
 
-  // Target: rebuild
-  target("rebuild", ["clean", "build"], (Target t, Map args) {
+  // Target: compile_link
+  target("compile_link", [libname], (Target t, Map args) {
     print("The ${t.name} successful.");
-  }, description: "Rebuild '$PROJECT_NAME'.");
+  }, description: "Compile and link '$PROJECT_NAME'.");
 
   // Target: clean
   target("clean", [], (Target t, Map args) {
     FileUtils.rm(["*.exp", "*.lib", "*.o", "*.obj"], force: true);
     print("The ${t.name} successful.");
-  }, description: "Cleaning the project of the intermediate files.");
+  }, description: "Deletes all intermediate files.", reusable: true);
+
+  // Target: clean_all
+  target("clean_all", ["clean"], (Target t, Map args) {
+    FileUtils.rm([libname], force: true);
+    print("The ${t.name} successful.");
+  }, description: "Deletes all intermediate and output files.", reusable: true);
 
   // Compile on Posix
   rule("%.o", ["%.cc"], (Target t, Map args) {

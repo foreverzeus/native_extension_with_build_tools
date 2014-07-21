@@ -1,5 +1,5 @@
 name: native_extension_with_build_tools
-version: 0.0.1
+version: 0.0.2
 author: Andrew Mezoni <andrew.mezoni@gmail.com>
 description: Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
 homepage: https://github.com/mezoni/native_extension_with_build_tools.git
