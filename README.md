@@ -9,6 +9,7 @@ import "package:ccompilers/ccompilers.dart";
 import "package:build_tools/build_shell.dart";
 import "package:build_tools/build_tools.dart";
 import "package:file_utils/file_utils.dart";
+import "package:patsubst/patsubst.dart";
 
 void main(List<String> args) {
   const String PROJECT_NAME = "sample_extension";
@@ -62,11 +63,10 @@ void main(List<String> args) {
     cppFiles = FileUtils.exclude(cppFiles, "sample_extension_dllmain_win.cc");
   }
 
-  cppFiles = cppFiles.map((e) => FileUtils.basename(e)).toList();
+  cppFiles = cppFiles.map((e) => FileUtils.basename(e));
 
   // Object files
-  var objFiles = cppFiles.map((e) => FileUtils.basename(e, suffix: ".cc") +
-      objExtension).toList();
+  var objFiles = new PatSubst("%.cc", "%${objExtension}").replaceAll(cppFiles);
 
   // Makefile
   // Target: default
@@ -129,8 +129,7 @@ void main(List<String> args) {
     args.add('-m64', test: bits == 64);
     args.addAll(linkerLibpath, prefix: '-L');
     args.add('-shared');
-    args.add('-o');
-    args.add(t.name);
+    args.addAll(['-o', t.name]);
     return linker.run(args.arguments).exitCode;
   });
 
@@ -143,8 +142,7 @@ void main(List<String> args) {
     args.add('-m64', test: bits == 64);
     args.addAll(linkerLibpath, prefix: '-L');
     args.addAll(['-dynamiclib', '-undefined', 'dynamic_lookup']);
-    args.add('-o');
-    args.add(t.name);
+    args.addAll(['-o', t.name]);
     return linker.run(args.arguments).exitCode;
   });
 
