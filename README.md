@@ -11,7 +11,7 @@ import "package:ccompilers/ccompilers.dart";
 import "package:build_tools/build_shell.dart";
 import "package:build_tools/build_tools.dart";
 import "package:file_utils/file_utils.dart";
-import "package:patsubst/top_level.dart";
+import "package:patsubst/patsubst.dart";
 
 void main(List<String> args) {
   const String PROJECT_NAME = "sample_extension";
