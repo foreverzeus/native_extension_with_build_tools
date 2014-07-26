@@ -8,3 +8,5 @@ dependencies:
     git: https://github.com/mezoni/build_tools.git
   ccompilers: any
   file_utils: any
+  patsubst:
+    git: https://github.com/mezoni/patsubst.git
