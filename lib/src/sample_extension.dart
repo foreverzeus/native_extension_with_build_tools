@@ -1,4 +1,4 @@
-library ccompile.example.sample_extension;
+library native_extension_with_build_tools.sample_extension;
 
 import "dart-ext:sample_extension";
 

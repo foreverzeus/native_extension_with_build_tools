@@ -1,6 +1,4 @@
-library ccompile.example.example_use_sample_extension;
-
-import 'sample_extension.dart';
+import "package:native_extension_with_build_tools/sample_extension.dart";
 
 void main() {
   print('====================');
