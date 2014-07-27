@@ -1,15 +1,15 @@
-#Native_extension_with_build_tools
+#native_extension_with_build_tools
 ==========
 
 Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
 
-Option with using rules:
+Makefile with rules:
 
 ```dart
 import "dart:io";
-import "package:ccompilers/ccompilers.dart";
 import "package:build_tools/build_shell.dart";
 import "package:build_tools/build_tools.dart";
+import "package:ccompilers/ccompilers.dart";
 import "package:file_utils/file_utils.dart";
 import "package:patsubst/patsubst.dart";
 
@@ -22,7 +22,7 @@ void main(List<String> args) {
   // Determine operating system
   var os = Platform.operatingSystem;
 
-  // Setup Dart SDK bitness for extension
+  // Setup Dart SDK bitness for native extension
   var bits = DartSDK.getVmBits();
 
   // Compiler options
@@ -62,7 +62,7 @@ void main(List<String> args) {
   // C++ files
   var cppFiles = FileUtils.glob("*.cc");
   if (os != "windows") {
-    cppFiles = FileUtils.exclude(cppFiles, "sample_extension_dllmain_win.cc");
+    cppFiles = FileUtils.exclude(cppFiles, "${PROJECT_NAME}_dllmain_win.cc");
   }
 
   cppFiles = cppFiles.map((e) => FileUtils.basename(e));
@@ -165,13 +165,13 @@ void main(List<String> args) {
 }
 ```
 
-Option without using rules:
+Makefile without rules:
 
 ```dart
 import "dart:io";
-import "package:ccompilers/ccompilers.dart";
 import "package:build_tools/build_shell.dart";
 import "package:build_tools/build_tools.dart";
+import "package:ccompilers/ccompilers.dart";
 import "package:file_utils/file_utils.dart";
 
 void main(List<String> args) {
@@ -183,7 +183,7 @@ void main(List<String> args) {
   // Determine operating system
   var os = Platform.operatingSystem;
 
-  // Setup Dart SDK bitness for extension
+  // Setup Dart SDK bitness for native extension
   var bits = DartSDK.getVmBits();
 
   // Compiler options
@@ -219,7 +219,7 @@ void main(List<String> args) {
   // C++ files
   var cppFiles = FileUtils.glob("*.cc");
   if (os != "windows") {
-    cppFiles = FileUtils.exclude(cppFiles, "sample_extension_dllmain_win.cc");
+    cppFiles = FileUtils.exclude(cppFiles, "${PROJECT_NAME}_dllmain_win.cc");
   }
 
   cppFiles = cppFiles.map((e) => FileUtils.basename(e));

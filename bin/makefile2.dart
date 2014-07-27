@@ -1,9 +1,8 @@
 import "dart:io";
-import "package:ccompilers/ccompilers.dart";
 import "package:build_tools/build_shell.dart";
 import "package:build_tools/build_tools.dart";
+import "package:ccompilers/ccompilers.dart";
 import "package:file_utils/file_utils.dart";
-import "package:patsubst/patsubst.dart";
 
 void main(List<String> args) {
   const String PROJECT_NAME = "sample_extension";
@@ -14,7 +13,7 @@ void main(List<String> args) {
   // Determine operating system
   var os = Platform.operatingSystem;
 
-  // Setup Dart SDK bitness for extension
+  // Setup Dart SDK bitness for native extension
   var bits = DartSDK.getVmBits();
 
   // Compiler options
@@ -26,19 +25,15 @@ void main(List<String> args) {
 
   // OS dependent parameters
   var libname = "";
-  var objExtension = "";
   switch (os) {
     case "linux":
       libname = LIBNAME_LINUX;
-      objExtension = ".o";
       break;
     case "macos":
       libname = LIBNAME_MACOS;
-      objExtension = ".o";
       break;
     case "windows":
       libname = LIBNAME_WINDOWS;
-      objExtension = ".obj";
       break;
     default:
       print("Unsupported operating system: $os");
@@ -54,13 +49,10 @@ void main(List<String> args) {
   // C++ files
   var cppFiles = FileUtils.glob("*.cc");
   if (os != "windows") {
-    cppFiles = FileUtils.exclude(cppFiles, "sample_extension_dllmain_win.cc");
+    cppFiles = FileUtils.exclude(cppFiles, "${PROJECT_NAME}_dllmain_win.cc");
   }
 
   cppFiles = cppFiles.map((e) => FileUtils.basename(e));
-
-  // Object files
-  var objFiles = patsubst("%.cc", "%${objExtension}").replaceAll(cppFiles);
 
   // Makefile
   // Target: default
@@ -89,7 +81,7 @@ void main(List<String> args) {
   }, description: "Deletes all intermediate and output files.", reusable: true);
 
   // Compile on Posix
-  rule("%.o", ["%.cc"], (Target t, Map args) {
+  file("$PROJECT_NAME.o", cppFiles, (Target t, Map args) {
     var args = new CommandLineArguments();
     var compiler = new Gpp();
     args.add('-c');
@@ -103,7 +95,7 @@ void main(List<String> args) {
   });
 
   // Compile on Windows
-  rule("%.obj", ["%.cc"], (Target t, Map args) {
+  file("$PROJECT_NAME.obj", cppFiles, (Target t, Map args) {
     var args = new CommandLineArguments();
     var compiler = new Msvc(bits: bits);
     args.add('/c');
@@ -115,7 +107,7 @@ void main(List<String> args) {
   });
 
   // Link on Linux
-  file(LIBNAME_LINUX, objFiles, (Target t, Map args) {
+  file(LIBNAME_LINUX, ["$PROJECT_NAME.o"], (Target t, Map args) {
     var args = new CommandLineArguments();
     var linker = new Gcc();
     args.addAll(t.sources);
@@ -128,7 +120,7 @@ void main(List<String> args) {
   });
 
   // Link on Macos
-  file(LIBNAME_MACOS, objFiles, (Target t, Map args) {
+  file(LIBNAME_MACOS, ["$PROJECT_NAME.o"], (Target t, Map args) {
     var args = new CommandLineArguments();
     var linker = new Gcc();
     args.addAll(t.sources);
@@ -141,7 +133,7 @@ void main(List<String> args) {
   });
 
   // Link on Windows
-  file(LIBNAME_WINDOWS, objFiles, (Target t, Map args) {
+  file(LIBNAME_WINDOWS, ["$PROJECT_NAME.obj"], (Target t, Map args) {
     var args = new CommandLineArguments();
     var linker = new Mslink(bits: bits);
     args.add('/DLL');
