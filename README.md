@@ -3,6 +3,8 @@
 
 Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
 
+Version: 0.0.8
+
 Makefile with rules:
 
 ```dart
@@ -64,8 +66,6 @@ void main(List<String> args) {
   if (os != "windows") {
     cppFiles = FileUtils.exclude(cppFiles, "${PROJECT_NAME}_dllmain_win.cc");
   }
-
-  cppFiles = cppFiles.map((e) => FileUtils.basename(e));
 
   // Object files
   var objFiles = patsubst("%.cc", "%${objExtension}").replaceAll(cppFiles);
@@ -163,6 +163,7 @@ void main(List<String> args) {
 
   new BuildShell().run(args).then((exitCode) => exit(exitCode));
 }
+
 ```
 
 Makefile without rules:
@@ -221,8 +222,6 @@ void main(List<String> args) {
   if (os != "windows") {
     cppFiles = FileUtils.exclude(cppFiles, "${PROJECT_NAME}_dllmain_win.cc");
   }
-
-  cppFiles = cppFiles.map((e) => FileUtils.basename(e));
 
   // Makefile
   // Target: default
@@ -317,4 +316,5 @@ void main(List<String> args) {
 
   new BuildShell().run(args).then((exitCode) => exit(exitCode));
 }
+
 ```

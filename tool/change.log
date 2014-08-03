@@ -1,0 +1,4 @@
+0.0.8 Added `build script` at 'tool/project.dart'
+0.0.8 Added 'tool/README.MD.in' template for building 'README.ME'
+0.0.8 Added 'tool/change.log' template for building 'CHANGELOG.ME'
+0.0.8 Minor improvements in makefiles

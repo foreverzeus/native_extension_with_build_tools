@@ -52,8 +52,6 @@ void main(List<String> args) {
     cppFiles = FileUtils.exclude(cppFiles, "${PROJECT_NAME}_dllmain_win.cc");
   }
 
-  cppFiles = cppFiles.map((e) => FileUtils.basename(e));
-
   // Makefile
   // Target: default
   target("default", ["build"], null, description: "Build and clean.");

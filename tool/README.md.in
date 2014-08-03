@@ -1,0 +1,18 @@
+#native_extension_with_build_tools
+==========
+
+Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
+
+Version: {{VERSION}}
+
+Makefile with rules:
+
+```dart
+{{bin/makefile1.dart}}
+```
+
+Makefile without rules:
+
+```dart
+{{bin/makefile2.dart}}
+```
