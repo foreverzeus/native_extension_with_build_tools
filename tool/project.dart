@@ -66,8 +66,12 @@ void main(List<String> args) {
 
   // Update the project version after "git:commit"
   after(["git:commit"], (Target t, Map args) {
-    updateVersion(incrementVersion(getVersion()));
-    print("Version switched to ${getVersion()}");
+    var version = getVersion();
+    print("Change the project version to '$version' (Y/N)?");
+    if (stdin.readLineSync().toLowerCase().startsWith("y")) {
+      updateVersion(incrementVersion(getVersion()));
+      print("Version switched to ${getVersion()}");
+    }
   });
 
   target("git:push", [], (Target t, Map args) {
