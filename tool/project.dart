@@ -30,10 +30,12 @@ void main(List<String> args) {
     FileUtils.touch([t.name], create: true);
   });
 
-  file(README_MD, [README_MD_IN, MAKEFILE1_DART, MAKEFILE2_DART], (Target t, Map
+  file(README_MD, [README_MD_IN, PUBSPEC_YAML, MAKEFILE1_DART, MAKEFILE2_DART], (Target t, Map
       args) {
     var sources = t.sources.toList();
     var template = new File(sources.removeAt(0)).readAsStringSync();
+    // Remove "pubspec.yaml"
+    sources.removeAt(0);
     for (var filename in sources) {
       var text = new File(filename).readAsStringSync();
       template = template.replaceFirst("{{$filename}}", text);

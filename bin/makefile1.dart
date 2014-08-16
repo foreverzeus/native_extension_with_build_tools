@@ -88,67 +88,44 @@ void main(List<String> args) {
 
   // Compile on Posix
   rule("%.o", ["%.cc"], (Target t, Map args) {
-    var args = new CommandLineArguments();
-    var compiler = new Gpp();
-    args.add('-c');
-    args.addAll(['-fPIC', '-Wall']);
-    args.add('-m32', test: bits == 32);
-    args.add('-m64', test: bits == 64);
-    args.addAll(compilerInclude, prefix: '-I');
-    args.addKeys(compilerDefine, prefix: '-D');
-    args.addAll(t.sources);
-    return compiler.run(args.arguments).exitCode;
+    var compiler = new GnuCppCompiler();
+    var args = ['-fPIC', '-Wall'];
+    return compiler.compile(t.sources, arguments: args, define: compilerDefine,
+        include: compilerInclude, output: t.name).exitCode;
   });
 
   // Compile on Windows
   rule("%.obj", ["%.cc"], (Target t, Map args) {
-    var args = new CommandLineArguments();
-    var compiler = new Msvc(bits: bits);
-    args.add('/c');
-    args.addAll(t.sources);
-    args.addAll(compilerInclude, prefix: '-I');
-    args.addKeys(compilerDefine, prefix: '-D');
-    args.addKey('DART_SHARED_LIB', null, prefix: '-D');
-    return compiler.run(args.arguments).exitCode;
+    var compiler = new MsCppCompiler(bits);
+    var define = new Map.from(compilerDefine);
+    define["DART_SHARED_LIB"] = null;
+    return compiler.compile(t.sources, define: compilerDefine, include:
+        compilerInclude, output: t.name).exitCode;
   });
 
   // Link on Linux
   file(LIBNAME_LINUX, objFiles, (Target t, Map args) {
-    var args = new CommandLineArguments();
-    var linker = new Gcc();
-    args.addAll(t.sources);
-    args.add('-m32', test: bits == 32);
-    args.add('-m64', test: bits == 64);
-    args.addAll(linkerLibpath, prefix: '-L');
-    args.add('-shared');
-    args.addAll(['-o', t.name]);
-    return linker.run(args.arguments).exitCode;
+    var linker = new GnuLinker(bits);
+    var args = ['-shared'];
+    return linker.link(t.sources, arguments: args, libpaths: linkerLibpath,
+        output: t.name).exitCode;
   });
 
   // Link on Macos
   file(LIBNAME_MACOS, objFiles, (Target t, Map args) {
-    var args = new CommandLineArguments();
-    var linker = new Gcc();
-    args.addAll(t.sources);
-    args.add('-m32', test: bits == 32);
-    args.add('-m64', test: bits == 64);
-    args.addAll(linkerLibpath, prefix: '-L');
-    args.addAll(['-dynamiclib', '-undefined', 'dynamic_lookup']);
-    args.addAll(['-o', t.name]);
-    return linker.run(args.arguments).exitCode;
+    var linker = new GnuLinker(bits);
+    var args = ['-dynamiclib', '-undefined', 'dynamic_lookup'];
+    return linker.link(t.sources, arguments: args, libpaths: linkerLibpath,
+        output: t.name).exitCode;
   });
 
   // Link on Windows
   file(LIBNAME_WINDOWS, objFiles, (Target t, Map args) {
-    var args = new CommandLineArguments();
-    var linker = new Mslink(bits: bits);
-    args.add('/DLL');
-    args.addAll(t.sources);
-    args.addAll(['dart.lib']);
-    args.addAll(linkerLibpath, prefix: '/LIBPATH:');
-    args.add('$DART_SDK/bin', prefix: '/LIBPATH:');
-    args.add(t.name, prefix: '/OUT:');
-    return linker.run(args.arguments).exitCode;
+    var linker = new MsLinker(bits);
+    var args = ['/DLL', 'dart.lib'];
+    var libpaths = new List.from(linkerLibpath);
+    libpaths.add('$DART_SDK/bin');
+    return linker.link(t.sources, arguments: args, output: t.name).exitCode;
   });
 
   new BuildShell().run(args).then((exitCode) => exit(exitCode));

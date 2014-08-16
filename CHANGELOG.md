@@ -1,3 +1,7 @@
+## 0.0.10
+
+* Updated the makefiles for using with new version of `ccompilers` 
+
 ## 0.0.9
 
 * Change the project version after the `git:commit` now asks the user before update version
