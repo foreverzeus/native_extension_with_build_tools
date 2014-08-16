@@ -1,6 +1,9 @@
-## 0.0.10
+## 0.0.11
 
 * Corrected the makefiles for using `bits` parameter in `GnuCppCompiler` constructor
+
+## 0.0.10
+
 * Updated the makefiles for using with new version of `ccompilers` 
 
 ## 0.0.9
