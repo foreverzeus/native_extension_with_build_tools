@@ -4,3 +4,4 @@
 0.0.8 Minor improvements in makefiles
 0.0.9 Change the project version after the `git:commit` now asks the user before update version
 0.0.10 Updated the makefiles for using with new version of `ccompilers` 
+0.0.10 Corrected the makefiles for using `bits` parameter in `GnuCppCompiler` constructor

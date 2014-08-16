@@ -3,7 +3,7 @@
 
 Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
 
-Version: 0.0.10
+Version: 0.0.11
 
 Makefile with rules:
 
@@ -98,7 +98,7 @@ void main(List<String> args) {
 
   // Compile on Posix
   rule("%.o", ["%.cc"], (Target t, Map args) {
-    var compiler = new GnuCppCompiler();
+    var compiler = new GnuCppCompiler(bits);
     var args = ['-fPIC', '-Wall'];
     return compiler.compile(t.sources, arguments: args, define: compilerDefine,
         include: compilerInclude, output: t.name).exitCode;
@@ -228,7 +228,7 @@ void main(List<String> args) {
 
   // Compile on Posix
   file("$PROJECT_NAME.o", cppFiles, (Target t, Map args) {
-    var compiler = new GnuCppCompiler();
+    var compiler = new GnuCppCompiler(bits);
     var args = ['-fPIC', '-Wall'];
     return compiler.compile(t.sources, arguments: args, define: compilerDefine,
         include: compilerInclude, output: t.name).exitCode;

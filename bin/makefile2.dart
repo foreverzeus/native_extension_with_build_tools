@@ -80,7 +80,7 @@ void main(List<String> args) {
 
   // Compile on Posix
   file("$PROJECT_NAME.o", cppFiles, (Target t, Map args) {
-    var compiler = new GnuCppCompiler();
+    var compiler = new GnuCppCompiler(bits);
     var args = ['-fPIC', '-Wall'];
     return compiler.compile(t.sources, arguments: args, define: compilerDefine,
         include: compilerInclude, output: t.name).exitCode;
