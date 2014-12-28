@@ -1,3 +1,7 @@
+## 0.0.14
+
+* Removed unused code from `makefile.dart`
+
 ## 0.0.12
 
 * Fixed bugs

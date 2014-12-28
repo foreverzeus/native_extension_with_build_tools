@@ -22,7 +22,7 @@ void main(List<String> args) {
   var compilerInclude = ['$DART_SDK/include'];
 
   // Linker options
-  var linkerLibpath = <String>['$DART_SDK/bin'];
+  var linkerLibpath = [];
 
   // OS dependent parameters
   var libname = "";
@@ -40,6 +40,7 @@ void main(List<String> args) {
       libname = LIBNAME_WINDOWS;
       objExtension = ".obj";
       compilerDefine["DART_SHARED_LIB"] = null;
+      linkerLibpath.add('$DART_SDK/bin');
       break;
     default:
       print("Unsupported operating system: $os");
@@ -69,19 +70,16 @@ void main(List<String> args) {
 
   // Target: compile_link
   target("compile_link", [libname], (Target t, Map args) {
-    print("The ${t.name} successful.");
   }, description: "Compile and link '$PROJECT_NAME'.");
 
   // Target: clean
   target("clean", [], (Target t, Map args) {
     FileUtils.rm(["*.exp", "*.lib", "*.o", "*.obj"], force: true);
-    print("The ${t.name} successful.");
   }, description: "Deletes all intermediate files.", reusable: true);
 
   // Target: clean_all
   target("clean_all", ["clean"], (Target t, Map args) {
     FileUtils.rm([libname], force: true);
-    print("The ${t.name} successful.");
   }, description: "Deletes all intermediate and output files.", reusable: true);
 
   // Compile on Posix
@@ -94,7 +92,6 @@ void main(List<String> args) {
   // Compile on Windows
   rule("%.obj", ["%.cc"], (Target t, Map args) {
     var compiler = new MsCppCompiler(bits);
-    var define = new Map.from(compilerDefine);
     return compiler.compile(t.sources, define: compilerDefine, include: compilerInclude, output: t.name).exitCode;
   });
 
@@ -116,8 +113,6 @@ void main(List<String> args) {
   file(LIBNAME_WINDOWS, objFiles, (Target t, Map args) {
     var linker = new MsLinker(bits);
     var args = ['/DLL', 'dart.lib'];
-    var libpaths = new List.from(linkerLibpath);
-    libpaths.add('$DART_SDK/bin');
     return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });
 
