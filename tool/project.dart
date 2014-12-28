@@ -6,8 +6,7 @@ import "package:file_utils/file_utils.dart";
 
 const String CHANGE_LOG = "tool/change.log";
 const String CHANGELOG_MD = "CHANGELOG.md";
-const String MAKEFILE1_DART = "bin/makefile1.dart";
-const String MAKEFILE2_DART = "bin/makefile2.dart";
+const String MAKEFILE_DART = "bin/makefile.dart";
 const String README_MD = "README.md";
 const String README_MD_IN = "tool/README.md.in";
 const String PUBSPEC_YAML = "pubspec.yaml";
@@ -30,8 +29,7 @@ void main(List<String> args) {
     FileUtils.touch([t.name], create: true);
   });
 
-  file(README_MD, [README_MD_IN, PUBSPEC_YAML, MAKEFILE1_DART, MAKEFILE2_DART], (Target t, Map
-      args) {
+  file(README_MD, [README_MD_IN, PUBSPEC_YAML, MAKEFILE_DART], (Target t, Map args) {
     var sources = t.sources.toList();
     var template = new File(sources.removeAt(0)).readAsStringSync();
     // Remove "pubspec.yaml"
@@ -55,8 +53,7 @@ void main(List<String> args) {
     return exec("git", ["add", "--all"]);
   }, description: "git add --all");
 
-  target("git:commit", [CHANGELOG_MD, README_MD, "git:add"], (Target t, Map
-      args) {
+  target("git:commit", [CHANGELOG_MD, README_MD, "git:add"], (Target t, Map args) {
     var message = args["m"];
     if (message == null || message.isEmpty) {
       print("Please, specify the `commit` message with --m option");
@@ -93,8 +90,7 @@ void main(List<String> args) {
     logChanges(message);
   }, description: "log changes, --m message", reusable: true);
 
-  target("prj:changelog", [CHANGELOG_MD], null, description:
-      "generate '$CHANGELOG_MD'", reusable: true);
+  target("prj:changelog", [CHANGELOG_MD], null, description: "generate '$CHANGELOG_MD'", reusable: true);
 
   target("prj:version", [], (Target t, Map args) {
     print("Version: ${getVersion()}");
@@ -192,7 +188,7 @@ void writeChangelogMd() {
 
   var lines = log.readAsLinesSync();
   lines = lines.reversed.toList();
-  var versions = <String, List<String>> {};
+  var versions = <String, List<String>>{};
   for (var line in lines) {
     var index = line.indexOf(" ");
     if (index != -1) {

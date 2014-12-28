@@ -8,11 +8,5 @@ Version: {{VERSION}}
 Makefile with rules:
 
 ```dart
-{{bin/makefile1.dart}}
-```
-
-Makefile without rules:
-
-```dart
-{{bin/makefile2.dart}}
+{{bin/makefile.dart}}
 ```

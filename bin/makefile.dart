@@ -3,6 +3,7 @@ import "package:build_tools/build_shell.dart";
 import "package:build_tools/build_tools.dart";
 import "package:ccompilers/ccompilers.dart";
 import "package:file_utils/file_utils.dart";
+import "package:patsubst/patsubst.dart";
 
 void main(List<String> args) {
   const String PROJECT_NAME = "sample_extension";
@@ -18,30 +19,32 @@ void main(List<String> args) {
 
   // Compiler options
   var compilerDefine = {};
-  var compilerInclude = ['$DART_SDK/bin', '$DART_SDK/include'];
+  var compilerInclude = ['$DART_SDK/include'];
 
   // Linker options
-  var linkerLibpath = <String>[];
+  var linkerLibpath = <String>['$DART_SDK/bin'];
 
   // OS dependent parameters
   var libname = "";
+  var objExtension = "";
   switch (os) {
     case "linux":
       libname = LIBNAME_LINUX;
+      objExtension = ".o";
       break;
     case "macos":
       libname = LIBNAME_MACOS;
+      objExtension = ".o";
       break;
     case "windows":
       libname = LIBNAME_WINDOWS;
+      objExtension = ".obj";
+      compilerDefine["DART_SHARED_LIB"] = null;
       break;
     default:
       print("Unsupported operating system: $os");
       exit(-1);
   }
-
-  // http://dartbug.com/20119
-  var bug20119 = Platform.script;
 
   // Set working directory
   FileUtils.chdir("../lib/src");
@@ -51,6 +54,9 @@ void main(List<String> args) {
   if (os != "windows") {
     cppFiles = FileUtils.exclude(cppFiles, "${PROJECT_NAME}_dllmain_win.cc");
   }
+
+  // Object files
+  var objFiles = patsubst("%.cc", "%${objExtension}").replaceAll(cppFiles);
 
   // Makefile
   // Target: default
@@ -79,45 +85,40 @@ void main(List<String> args) {
   }, description: "Deletes all intermediate and output files.", reusable: true);
 
   // Compile on Posix
-  file("$PROJECT_NAME.o", cppFiles, (Target t, Map args) {
+  rule("%.o", ["%.cc"], (Target t, Map args) {
     var compiler = new GnuCppCompiler(bits);
     var args = ['-fPIC', '-Wall'];
-    return compiler.compile(t.sources, arguments: args, define: compilerDefine,
-        include: compilerInclude, output: t.name).exitCode;
+    return compiler.compile(t.sources, arguments: args, define: compilerDefine, include: compilerInclude, output: t.name).exitCode;
   });
 
   // Compile on Windows
-  file("$PROJECT_NAME.obj", cppFiles, (Target t, Map args) {
+  rule("%.obj", ["%.cc"], (Target t, Map args) {
     var compiler = new MsCppCompiler(bits);
     var define = new Map.from(compilerDefine);
-    define["DART_SHARED_LIB"] = null;
-    return compiler.compile(t.sources, define: compilerDefine, include:
-        compilerInclude, output: t.name).exitCode;
+    return compiler.compile(t.sources, define: compilerDefine, include: compilerInclude, output: t.name).exitCode;
   });
 
   // Link on Linux
-  file(LIBNAME_LINUX, ["$PROJECT_NAME.o"], (Target t, Map args) {
+  file(LIBNAME_LINUX, objFiles, (Target t, Map args) {
     var linker = new GnuLinker(bits);
     var args = ['-shared'];
-    return linker.link(t.sources, arguments: args, libpaths: linkerLibpath,
-        output: t.name).exitCode;
+    return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });
 
   // Link on Macos
-  file(LIBNAME_MACOS, ["$PROJECT_NAME.o"], (Target t, Map args) {
+  file(LIBNAME_MACOS, objFiles, (Target t, Map args) {
     var linker = new GnuLinker(bits);
     var args = ['-dynamiclib', '-undefined', 'dynamic_lookup'];
-    return linker.link(t.sources, arguments: args, libpaths: linkerLibpath,
-        output: t.name).exitCode;
+    return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });
 
   // Link on Windows
-  file(LIBNAME_WINDOWS, ["$PROJECT_NAME.obj"], (Target t, Map args) {
+  file(LIBNAME_WINDOWS, objFiles, (Target t, Map args) {
     var linker = new MsLinker(bits);
     var args = ['/DLL', 'dart.lib'];
     var libpaths = new List.from(linkerLibpath);
     libpaths.add('$DART_SDK/bin');
-    return linker.link(t.sources, arguments: args, output: t.name).exitCode;
+    return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });
 
   new BuildShell().run(args).then((exitCode) => exit(exitCode));

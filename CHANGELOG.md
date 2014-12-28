@@ -1,3 +1,7 @@
+## 0.0.12
+
+* Fixed bugs
+
 ## 0.0.11
 
 * Corrected the makefiles for using `bits` parameter in `GnuCppCompiler` constructor
