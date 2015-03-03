@@ -48,7 +48,7 @@ void main(List<String> args) {
   }
 
   // Set working directory
-  FileUtils.chdir("../lib/src");
+  FileUtils.chdir("lib/src");
 
   // C++ files
   var cppFiles = FileUtils.glob("*.cc");
@@ -84,34 +84,34 @@ void main(List<String> args) {
 
   // Compile on Posix
   rule("%.o", ["%.cc"], (Target t, Map args) {
-    var compiler = new GnuCppCompiler(bits);
+    var compiler = new GnuCppCompiler(bits: bits);
     var args = ['-fPIC', '-Wall'];
     return compiler.compile(t.sources, arguments: args, define: compilerDefine, include: compilerInclude, output: t.name).exitCode;
   });
 
   // Compile on Windows
   rule("%.obj", ["%.cc"], (Target t, Map args) {
-    var compiler = new MsCppCompiler(bits);
+    var compiler = new MsCppCompiler(bits: bits);
     return compiler.compile(t.sources, define: compilerDefine, include: compilerInclude, output: t.name).exitCode;
   });
 
   // Link on Linux
   file(LIBNAME_LINUX, objFiles, (Target t, Map args) {
-    var linker = new GnuLinker(bits);
+    var linker = new GnuLinker(bits: bits);
     var args = ['-shared'];
     return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });
 
   // Link on Macos
   file(LIBNAME_MACOS, objFiles, (Target t, Map args) {
-    var linker = new GnuLinker(bits);
+    var linker = new GnuLinker(bits: bits);
     var args = ['-dynamiclib', '-undefined', 'dynamic_lookup'];
     return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });
 
   // Link on Windows
   file(LIBNAME_WINDOWS, objFiles, (Target t, Map args) {
-    var linker = new MsLinker(bits);
+    var linker = new MsLinker(bits: bits);
     var args = ['/DLL', 'dart.lib'];
     return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });

@@ -7,3 +7,4 @@
 0.0.11 Corrected the makefiles for using `bits` parameter in `GnuCppCompiler` constructor
 0.0.12 Fixed bugs
 0.0.14 Removed unused code from `makefile.dart`
+0.0.15 Made adaptations to the new version of package `ccompilers` 

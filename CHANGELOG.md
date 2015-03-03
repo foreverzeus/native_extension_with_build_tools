@@ -1,3 +1,7 @@
+## 0.0.15
+
+* Made adaptations to the new version of package `ccompilers` 
+
 ## 0.0.14
 
 * Removed unused code from `makefile.dart`
