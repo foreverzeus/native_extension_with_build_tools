@@ -1,3 +1,7 @@
+## 0.0.17
+
+* Minor changes in the project files without any effects   
+
 ## 0.0.15
 
 * Made adaptations to the new version of package `ccompilers` 

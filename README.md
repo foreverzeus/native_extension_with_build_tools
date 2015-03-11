@@ -3,7 +3,7 @@
 
 Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
 
-Version: 0.0.16
+Version: 0.0.17
 
 Makefile with rules:
 
