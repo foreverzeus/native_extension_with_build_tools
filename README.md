@@ -3,11 +3,12 @@
 
 Example of the `build script` for the native extension (C++) for the Dart VM with the usage of `build_tools` and `ccompilers`.
 
-Version: 0.0.15
+Version: 0.0.16
 
 Makefile with rules:
 
 ```dart
+import "dart:async";
 import "dart:io";
 import "package:build_tools/build_shell.dart";
 import "package:build_tools/build_tools.dart";
@@ -15,7 +16,7 @@ import "package:ccompilers/ccompilers.dart";
 import "package:file_utils/file_utils.dart";
 import "package:patsubst/patsubst.dart";
 
-void main(List<String> args) {
+Future main(List<String> args) async {
   const String PROJECT_NAME = "sample_extension";
   const String LIBNAME_LINUX = "lib$PROJECT_NAME.so";
   const String LIBNAME_MACOS = "lib$PROJECT_NAME.dylib";
@@ -126,7 +127,7 @@ void main(List<String> args) {
     return linker.link(t.sources, arguments: args, libpaths: linkerLibpath, output: t.name).exitCode;
   });
 
-  new BuildShell().run(args).then((exitCode) => exit(exitCode));
+  exit(await new BuildShell().run(args));
 }
 
 ```
